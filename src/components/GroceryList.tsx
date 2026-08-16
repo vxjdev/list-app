@@ -22,8 +22,8 @@ export function GroceryList({ items, onChange }: GroceryListProps) {
   }
 
   return (
-    <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
-      <h2 className="text-sm font-medium text-slate-700">Grocery items</h2>
+    <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+      <h2 className="text-sm font-medium text-slate-700 dark:text-slate-300">Grocery items</h2>
 
       <form onSubmit={addItem} className="mt-2 flex gap-2">
         <input
@@ -31,7 +31,7 @@ export function GroceryList({ items, onChange }: GroceryListProps) {
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
           placeholder="e.g. 2L full cream milk"
-          className="flex-1 rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+          className="flex-1 rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100"
         />
         <button
           type="submit"
@@ -42,16 +42,18 @@ export function GroceryList({ items, onChange }: GroceryListProps) {
       </form>
 
       {items.length === 0 ? (
-        <p className="mt-4 text-sm text-slate-400">No items yet. Add some grocery items above.</p>
+        <p className="mt-4 text-sm text-slate-400 dark:text-slate-500">
+          No items yet. Add some grocery items above.
+        </p>
       ) : (
-        <ul className="mt-4 divide-y divide-slate-100">
+        <ul className="mt-4 divide-y divide-slate-100 dark:divide-slate-800">
           {items.map((item, index) => (
             <li key={`${item}-${index}`} className="flex items-center justify-between py-2">
-              <span className="text-sm text-slate-700">{item}</span>
+              <span className="text-sm text-slate-700 dark:text-slate-300">{item}</span>
               <button
                 type="button"
                 onClick={() => removeItem(index)}
-                className="text-xs font-medium text-red-500 hover:text-red-700"
+                className="text-xs font-medium text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
                 aria-label={`Remove ${item}`}
               >
                 Remove

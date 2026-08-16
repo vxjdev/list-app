@@ -6,6 +6,7 @@ import { compareGroceryPrices } from './lib/gemini'
 import type { PriceComparisonResult } from './types'
 
 const API_KEY_STORAGE_KEY = 'gemini-api-key'
+const THEME_STORAGE_KEY = 'theme'
 
 function App() {
   const [apiKey, setApiKey] = useState(() => localStorage.getItem(API_KEY_STORAGE_KEY) ?? '')
@@ -13,10 +14,16 @@ function App() {
   const [results, setResults] = useState<PriceComparisonResult[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [darkMode, setDarkMode] = useState(() => document.documentElement.classList.contains('dark'))
 
   useEffect(() => {
     localStorage.setItem(API_KEY_STORAGE_KEY, apiKey)
   }, [apiKey])
+
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark', darkMode)
+    localStorage.setItem(THEME_STORAGE_KEY, darkMode ? 'dark' : 'light')
+  }, [darkMode])
 
   async function handleCompare() {
     setError(null)
@@ -43,11 +50,21 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
       <div className="mx-auto max-w-3xl px-4 py-10">
-        <header className="mb-6 text-center">
-          <h1 className="text-2xl font-semibold text-slate-900">Grocery Price Comparison</h1>
-          <p className="mt-1 text-sm text-slate-500">
+        <header className="relative mb-6 text-center">
+          <button
+            type="button"
+            onClick={() => setDarkMode((v) => !v)}
+            aria-label={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+            className="absolute right-0 top-0 rounded-md border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-600 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800"
+          >
+            {darkMode ? '☀️ Light' : '🌙 Dark'}
+          </button>
+          <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">
+            Grocery Price Comparison
+          </h1>
+          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
             Compare Woolworths vs Coles prices for your shopping list using Gemini.
           </p>
         </header>
@@ -66,7 +83,9 @@ function App() {
           </button>
 
           {error && (
-            <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>
+            <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-950 dark:text-red-300">
+              {error}
+            </p>
           )}
 
           <ResultsTable results={results} />

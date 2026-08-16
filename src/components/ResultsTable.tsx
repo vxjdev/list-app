@@ -6,10 +6,10 @@ interface ResultsTableProps {
 
 function StoreBadge({ store }: { store: PriceComparisonResult['cheaperStore'] }) {
   const styles: Record<PriceComparisonResult['cheaperStore'], string> = {
-    Woolworths: 'bg-green-100 text-green-800',
-    Coles: 'bg-red-100 text-red-800',
-    Tie: 'bg-slate-100 text-slate-700',
-    Unknown: 'bg-slate-100 text-slate-500',
+    Woolworths: 'bg-green-100 text-green-800 dark:bg-green-950 dark:text-green-300',
+    Coles: 'bg-red-100 text-red-800 dark:bg-red-950 dark:text-red-300',
+    Tie: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300',
+    Unknown: 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400',
   }
 
   return (
@@ -23,9 +23,9 @@ export function ResultsTable({ results }: ResultsTableProps) {
   if (results.length === 0) return null
 
   return (
-    <div className="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
+    <div className="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
       <table className="w-full text-left text-sm">
-        <thead className="bg-slate-50 text-xs uppercase text-slate-500">
+        <thead className="bg-slate-50 text-xs uppercase text-slate-500 dark:bg-slate-800 dark:text-slate-400">
           <tr>
             <th className="px-4 py-3">Item</th>
             <th className="px-4 py-3">Woolworths</th>
@@ -34,16 +34,22 @@ export function ResultsTable({ results }: ResultsTableProps) {
             <th className="px-4 py-3">Notes</th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-slate-100">
+        <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
           {results.map((result, index) => (
             <tr key={`${result.item}-${index}`}>
-              <td className="px-4 py-3 font-medium text-slate-800">{result.item}</td>
-              <td className="px-4 py-3 text-slate-600">{result.woolworthsPrice}</td>
-              <td className="px-4 py-3 text-slate-600">{result.colesPrice}</td>
+              <td className="px-4 py-3 font-medium text-slate-800 dark:text-slate-200">
+                {result.item}
+              </td>
+              <td className="px-4 py-3 text-slate-600 dark:text-slate-300">
+                {result.woolworthsPrice}
+              </td>
+              <td className="px-4 py-3 text-slate-600 dark:text-slate-300">{result.colesPrice}</td>
               <td className="px-4 py-3">
                 <StoreBadge store={result.cheaperStore} />
               </td>
-              <td className="px-4 py-3 text-xs text-slate-500">{result.notes ?? ''}</td>
+              <td className="px-4 py-3 text-xs text-slate-500 dark:text-slate-400">
+                {result.notes ?? ''}
+              </td>
             </tr>
           ))}
         </tbody>
