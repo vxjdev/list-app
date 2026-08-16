@@ -1,5 +1,5 @@
 import { GoogleGenAI, Type } from '@google/genai'
-import type { Schema } from '@google/genai'
+import type { GroundingMetadata, Schema } from '@google/genai'
 import type { PriceComparisonResult } from '../types'
 
 const MODEL_NAME = 'gemini-2.5-flash'
@@ -46,8 +46,8 @@ Items:
 ${list}
 
 For each item:
-1. Search for the item on the Woolworths website and note its current price, including whether it's on special/discounted right now.
-2. Search for the item on the Coles website and note its current price, including whether it's on special/discounted right now.
+1. Search using the query \`site:woolworths.com.au <item>\` to restrict results to the Woolworths website, and note its current price, including whether it's on special/discounted right now.
+2. Search using the query \`site:coles.com.au <item>\` to restrict results to the Coles website, and note its current price, including whether it's on special/discounted right now.
 3. Compare the two. Prices for the same item are often genuinely different between the two stores, especially when one store has it on special — do not assume they are equal unless your search results actually show the same price.
 
 Report your findings item by item, citing the price you found at each store and whether it was a special/catalogue price.`
@@ -72,6 +72,24 @@ For each item, return:
 Use the prices from the research as given — do not invent or round them.`
 }
 
+function logGroundingSources(metadata: GroundingMetadata | undefined): void {
+  if (!metadata) {
+    console.warn('[gemini] No grounding metadata returned — response may not be search-grounded.')
+    return
+  }
+
+  console.group('[gemini] Grounding sources for price research')
+  console.log('Search queries actually issued:', metadata.webSearchQueries ?? [])
+
+  const sources = metadata.groundingChunks?.map((chunk) => chunk.web).filter(Boolean) ?? []
+  if (sources.length === 0) {
+    console.warn('No web sources were cited in the grounded response.')
+  } else {
+    console.table(sources.map((web) => ({ title: web?.title, uri: web?.uri })))
+  }
+  console.groupEnd()
+}
+
 export async function compareGroceryPrices(
   apiKey: string,
   items: string[],
@@ -89,6 +107,7 @@ export async function compareGroceryPrices(
   if (!research) {
     throw new Error('Gemini returned no research results for these items.')
   }
+  logGroundingSources(researchResponse.candidates?.[0]?.groundingMetadata)
 
   const structuredResponse = await ai.models.generateContent({
     model: MODEL_NAME,
